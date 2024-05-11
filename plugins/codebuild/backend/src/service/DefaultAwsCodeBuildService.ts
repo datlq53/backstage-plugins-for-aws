@@ -56,7 +56,7 @@ export class DefaultAwsCodeBuildService implements AwsCodeBuildService {
     private readonly catalogApi: CatalogApi,
     private readonly resourceLocator: AwsResourceLocator,
     private readonly credsManager: AwsCredentialsManager,
-  ) {}
+  ) { }
 
   static async fromConfig(
     config: Config,
@@ -148,10 +148,10 @@ export class DefaultAwsCodeBuildService implements AwsCodeBuildService {
     const entity = await this.catalogApi.getEntityByRef(
       options.entityRef,
       options.credentials &&
-        (await this.auth.getPluginRequestToken({
-          onBehalfOf: options.credentials,
-          targetPluginId: 'catalog',
-        })),
+      (await this.auth.getPluginRequestToken({
+        onBehalfOf: options.credentials,
+        targetPluginId: 'catalog',
+      })),
     );
 
     if (!entity) {
@@ -180,7 +180,12 @@ export class DefaultAwsCodeBuildService implements AwsCodeBuildService {
         tagString: annotation.value,
       });
     } else {
-      arns = [annotation.value];
+      if (typeof annotation.value === 'string') {
+        arns = [annotation.value];
+      } else {
+        arns = annotation.value;
+      }
+
     }
 
     return Promise.resolve(arns);
